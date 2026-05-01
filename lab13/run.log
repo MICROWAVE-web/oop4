@@ -1,0 +1,74 @@
+Старт ЛР13: State + Memento + Observer
+
+[ASSISTANT]: Голосовой ассистент запущен
+Введите текст: [USER]: включи музыку
+[USER]: включи музыку
+Proxy: проверка прав
+Этот сервис не может быть воспроизведен оффлайн
+Spotify: play spotify_track_1
+[ASSISTANT]: Воспроизвожу музыку
+[LOG] track_started: {'track': 'spotify_track_1'}
+[SCREEN] mode=Idle | track=spotify_track_1 | vol=0
+[ASSISTANT]: Переход в состояние: Playing
+[LOG] state_changed: {'from': 'Idle', 'to': 'Playing'}
+[SCREEN] mode=Playing | track=spotify_track_1 | vol=0
+Введите текст: [USER]: громкость 7
+[USER]: громкость 7
+vol 7
+[ASSISTANT]: Громкость установлена: 7
+[LOG] volume_changed: {'volume': 7}
+[SCREEN] mode=Playing | track=spotify_track_1 | vol=7
+Введите текст: [USER]: запомни настройки
+[USER]: запомни настройки
+[ASSISTANT]: Настройки сохранены
+[LOG] snapshot_saved: {'volume': 7, 'current_track': 'spotify_track_1', 'state': 'Playing'}
+[SCREEN] mode=Playing | track=spotify_track_1 | vol=7
+Введите текст: [USER]: громкость 3
+[USER]: громкость 3
+vol 3
+[ASSISTANT]: Громкость установлена: 3
+[LOG] volume_changed: {'volume': 3}
+[SCREEN] mode=Playing | track=spotify_track_1 | vol=3
+Введите текст: [USER]: включи музыку
+[USER]: включи музыку
+[ASSISTANT]: Уже играет: spotify_track_1
+Введите текст: [USER]: не беспокой
+[USER]: не беспокой
+Spotify: stop
+[ASSISTANT]: Воспроизведение остановлено
+[LOG] track_stopped: {'track': 'spotify_track_1'}
+[SCREEN] mode=Playing | track=— | vol=3
+[ASSISTANT]: Переход в состояние: Muted
+[LOG] state_changed: {'from': 'Playing', 'to': 'Muted'}
+[SCREEN] mode=Muted | track=— | vol=3
+Введите текст: [USER]: включи музыку
+[USER]: включи музыку
+[ASSISTANT]: Не беспокоить: команда проигнорирована
+Введите текст: [USER]: вернись
+[USER]: вернись
+[ASSISTANT]: Переход в состояние: Idle
+[LOG] state_changed: {'from': 'Muted', 'to': 'Idle'}
+[SCREEN] mode=Idle | track=— | vol=3
+Введите текст: [USER]: восстанови настройки
+[USER]: восстанови настройки
+vol 7
+[LOG] volume_changed: {'volume': 7}
+[SCREEN] mode=Idle | track=— | vol=7
+[ASSISTANT]: Переход в состояние: Playing
+[LOG] state_changed: {'from': 'Idle', 'to': 'Playing'}
+[SCREEN] mode=Playing | track=— | vol=7
+Proxy: проверка прав
+Этот сервис не может быть воспроизведен оффлайн
+Spotify: play spotify_track_1
+[LOG] track_started: {'track': 'spotify_track_1'}
+[SCREEN] mode=Playing | track=spotify_track_1 | vol=7
+[ASSISTANT]: Настройки восстановлены: vol=7, track=spotify_track_1, state=Playing
+Введите текст: [USER]: выключись
+[USER]: выключись
+Spotify: stop
+[ASSISTANT]: Воспроизведение остановлено
+[LOG] track_stopped: {'track': 'spotify_track_1'}
+[SCREEN] mode=Playing | track=— | vol=7
+[ASSISTANT]: Завершение работы
+
+[STATS] snapshot_saved=1, state_changed=4, track_started=2, track_stopped=2, volume_changed=3

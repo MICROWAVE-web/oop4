@@ -1,0 +1,102 @@
+@startuml
+title ЛР13 - Реализация State + Memento + Observer (Python)
+
+' --- Контекст ---
+class DialogManager {
+  +run()
+  +handle_intent(intent, data)
+  +say(text)
+}
+
+class StatefulDialogManager {
+  -state : AssistantState
+  -caretaker : SettingsCaretaker
+  -subject : EventSubject
+  -current_track : str | None
+  -volume : int
+  +set_state(s)
+  +handle_intent(intent, data)
+  +start_music(query)
+  +stop_music()
+  +change_volume(data)
+  +delegate_info(data)
+  +delegate_news(data)
+  +save_snapshot()
+  +restore_snapshot()
+}
+DialogManager <|-- StatefulDialogManager
+
+' --- State ---
+abstract class AssistantState {
+  +name() : str
+  +handle(ctx, intent, data)
+}
+class IdleState
+class PlayingState
+class MutedState
+AssistantState <|-- IdleState
+AssistantState <|-- PlayingState
+AssistantState <|-- MutedState
+StatefulDialogManager o--> AssistantState
+
+' --- Memento ---
+class SettingsMemento <<frozen dataclass>> {
+  +volume : int
+  +current_track : str | None
+  +state_name : str
+}
+class SettingsCaretaker {
+  +save(m : SettingsMemento)
+  +restore() : SettingsMemento
+  +has_snapshot() : bool
+  +count() : int
+}
+StatefulDialogManager --> SettingsCaretaker
+SettingsCaretaker o--> "*" SettingsMemento
+
+' --- Observer ---
+class EventSubject {
+  +attach(o)
+  +detach(o)
+  +notify(name, payload)
+}
+abstract class EventObserver {
+  +update(name, payload)
+}
+class LoggerObserver {
+  -stream : TextIO
+  +update(name, payload)
+}
+class StatisticsObserver {
+  -counters : dict
+  +update(name, payload)
+  +report() : str
+}
+class ScreenObserver {
+  -volume : int
+  -track : str
+  -mode : str
+  +update(name, payload)
+}
+EventObserver <|-- LoggerObserver
+EventObserver <|-- StatisticsObserver
+EventObserver <|-- ScreenObserver
+StatefulDialogManager --> EventSubject
+EventSubject o--> "*" EventObserver
+
+' --- Расширение NLU ---
+class RuleBasedNLU {
+  +parse(text) : (intent, data)
+}
+class ExtendedRuleBasedNLU {
+  +parse(text) : (intent, data)
+}
+RuleBasedNLU <|-- ExtendedRuleBasedNLU
+
+' --- Связь с конфигурированием из ЛР11 ---
+class AssistantDirector
+class OfflineAssistantBuilder
+StatefulDialogManager ..> AssistantDirector : собирается через
+AssistantDirector ..> OfflineAssistantBuilder
+
+@enduml

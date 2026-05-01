@@ -1,0 +1,60 @@
+@startuml
+title ЛР11 - Builder (на основе ЛР4)
+
+interface AssistantBuilder {
+  +reset()
+  +build_music()
+  +build_info()
+  +build_player()
+  +build_asr()
+  +build_nlu()
+  +build_tts()
+  +build_voice()
+  +set_voice_interface(voice)
+  +get_result() AssistantAssembly
+}
+
+class AssistantDirector {
+  +construct(builder, voice_override) AssistantAssembly
+}
+
+class AssistantAssembly {
+  +music_service
+  +info_service
+  +player
+  +asr
+  +nlu
+  +tts
+  +voice_interface
+  +to_dialog_manager() DialogManager
+}
+
+class OfflineAssistantBuilder
+class SmartAssistantBuilder
+class CarAssistantBuilder
+
+class DialogManager
+class MusicService
+class InfoService
+class Player
+class ASRModule
+class NLUModule
+class TTSModule
+class VoiceInterface
+
+AssistantBuilder <|.. OfflineAssistantBuilder
+AssistantBuilder <|.. SmartAssistantBuilder
+AssistantBuilder <|.. CarAssistantBuilder
+AssistantDirector --> AssistantBuilder : управляет шагами
+AssistantDirector --> AssistantAssembly : возвращает
+
+AssistantAssembly --> MusicService
+AssistantAssembly --> InfoService
+AssistantAssembly --> Player
+AssistantAssembly --> ASRModule
+AssistantAssembly --> NLUModule
+AssistantAssembly --> TTSModule
+AssistantAssembly --> VoiceInterface
+AssistantAssembly --> DialogManager : создает
+
+@enduml

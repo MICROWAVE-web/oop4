@@ -1,0 +1,46 @@
+﻿Старт ЛР11: Builder
+
+=== Сценарий 1: Offline ===
+[ASSISTANT]: Голосовой ассистент запущен
+Введите текст: [USER]: включи музыку
+[USER]: включи музыку
+Proxy: проверка прав
+Этот сервис не может быть воспроизведен оффлайн
+Spotify: play spotify_track_1
+[ASSISTANT]: Воспроизвожу музыку
+Введите текст: [USER]: громкость 7
+[USER]: громкость 7
+vol 7
+[ASSISTANT]: Громкость установлена: 7
+Введите текст: [USER]: выключись
+[USER]: выключись
+[ASSISTANT]: Завершение работы
+
+=== Сценарий 2: Smart ===
+Connected to bluetooth
+[ASSISTANT]: Голосовой ассистент запущен
+Введите текст: [USER]: включи музыку
+[USER]: включи музыку
+Proxy: проверка прав
+Spotify: play spotify_track_1
+[ASSISTANT]: Воспроизвожу музыку
+Введите текст: [USER]: новости технологии
+[USER]: новости технологии
+[ASSISTANT]: Google news 1 about технологии
+[ASSISTANT]: Google news 2 about технологии
+[ASSISTANT]: Google news 3 about технологии
+[ASSISTANT]: Google news 4 about технологии
+[ASSISTANT]: Google news 5 about технологии
+Введите текст: [USER]: выключись
+[USER]: выключись
+[ASSISTANT]: Завершение работы
+
+=== Сценарий 3: Car ===
+[ASSISTANT]: Голосовой ассистент запущен
+Введите текст: [USER]: включи музыку
+[USER]: включи музыку
+VK: play vk_track_1
+[ASSISTANT]: Воспроизвожу музыку
+Введите текст: [USER]: выключись
+[USER]: выключись
+[ASSISTANT]: Завершение работы

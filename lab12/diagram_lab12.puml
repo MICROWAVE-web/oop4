@@ -1,0 +1,75 @@
+@startuml
+title ЛР12 - State + Memento + Observer (на основе ЛР4)
+
+' --- Контекст: расширенный диалоговый менеджер из ЛР4 ---
+class DialogManager {
+  +run()
+  +handle_intent(intent, data)
+  +say(text)
+}
+
+class StatefulDialogManager {
+  -state : AssistantState
+  -caretaker : SettingsCaretaker
+  -subject : EventSubject
+  -current_track
+  -volume
+  +set_state(s)
+  +handle_intent(intent, data)
+  +save_snapshot()
+  +restore_snapshot()
+}
+DialogManager <|-- StatefulDialogManager
+
+' --- State ---
+abstract class AssistantState {
+  +handle(ctx, intent, data)
+  +name() : str
+}
+class IdleState
+class PlayingState
+class MutedState
+AssistantState <|-- IdleState
+AssistantState <|-- PlayingState
+AssistantState <|-- MutedState
+StatefulDialogManager o--> AssistantState : текущее состояние
+
+' --- Memento ---
+class SettingsMemento {
+  +volume
+  +current_track
+  +state_name
+}
+class SettingsCaretaker {
+  +save(m : SettingsMemento)
+  +restore() : SettingsMemento
+  +has_snapshot() : bool
+}
+StatefulDialogManager --> SettingsCaretaker : хранит снимки
+SettingsCaretaker o--> "*" SettingsMemento
+
+' --- Observer ---
+class EventSubject {
+  +attach(o)
+  +detach(o)
+  +notify(name, payload)
+}
+abstract class EventObserver {
+  +update(name, payload)
+}
+class LoggerObserver
+class StatisticsObserver
+class ScreenObserver
+EventObserver <|-- LoggerObserver
+EventObserver <|-- StatisticsObserver
+EventObserver <|-- ScreenObserver
+StatefulDialogManager --> EventSubject : публикует события
+EventSubject o--> "*" EventObserver
+
+' --- Связь с базовыми сервисами ЛР4 (используются как есть) ---
+class MusicService
+class Player
+StatefulDialogManager ..> MusicService : использует
+StatefulDialogManager ..> Player : использует
+
+@enduml
