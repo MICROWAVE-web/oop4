@@ -1,0 +1,112 @@
+1) Singleton (Одиночка)
+Теория простыми словами
+Singleton нужен, когда в системе должен быть ровно один объект определенного типа (например, глобальная конфигурация), и все должны обращаться к нему через одну точку доступа.
+
+Что сделано у вас
+В lab9/singleton_config.py реализован AssistantConfig:
+
+хранит единственный экземпляр в _instance;
+выдает его через get_instance();
+запрещает повторное создание через __init__ (бросает RuntimeError, если экземпляр уже есть);
+хранит настройки профиля (profile, music_source, pool_max_size, прототипы и т.д.).
+Как применяется в вашем коде
+В lab9/main.py:
+
+конфиг берется через AssistantConfig.get_instance();
+настраивается через configure(...);
+потом этот же объект используется при сборке фабрик, пула и прототипов.
+в демо есть проверка cfg_a is cfg_b, показывающая, что это один и тот же объект.
+2) Factory Method (Фабричный метод)
+Теория простыми словами
+Идея: вместо if/new по всему коду создание объекта выносится в отдельный “создатель”.
+Клиент работает с абстракцией создания, а конкретный класс продукта выбирается внутри создателя.
+
+Что сделано у вас
+В lab9/factory_method.py:
+
+абстрактный создатель MusicServiceCreator с методом create_music_service();
+конкретные создатели:
+SpotifyCreator
+VKCreator
+LocalFileCreator
+функция build_music_creator(source) выбирает подходящий создатель по строке источника.
+Как применяется в вашем коде
+В lab9/abstract_factory.py базовая фабрика AssistantComponentFactory в конструкторе делает:
+
+self.music_creator = build_music_creator(config.get("music_source", "local")) А потом в конкретных фабриках музыка создается через:
+self.music_creator.create_music_service() То есть выбор конкретной реализации MusicService централизован и отделен от остальной логики.
+3) Abstract Factory (Абстрактная фабрика)
+Теория простыми словами
+Abstract Factory создает целое семейство связанных объектов, чтобы они были совместимы между собой.
+Например, “offline-профиль” и “smart-профиль” — это два разных семейства компонентов.
+
+Что сделано у вас
+В lab9/abstract_factory.py:
+
+интерфейс AssistantComponentFactory задает набор методов создания всех зависимостей:
+музыка, информация, плеер, ASR, NLU, TTS, voice interface;
+реализованы конкретные семейства:
+OfflineFactory
+SmartFactory
+CarFactory
+функция build_component_factory(config) выбирает фабрику по profile.
+Как применяется в вашем коде
+В lab9/main.py, внутри AssistantAssembler:
+
+вызывается build_component_factory(config);
+дальше весь DialogManager собирается через единый интерфейс фабрики:
+create_music_service(), create_info_service(), ... Это и есть главный смысл паттерна: один переключатель профиля меняет сразу весь комплект компонентов.
+4) Prototype (Прототип)
+Теория простыми словами
+Prototype — это создание новых объектов не через конструктор с нуля, а через клонирование готового образца.
+Удобно, когда объект уже сложно/долго настраивать, а надо быстро получать копии.
+
+Что сделано у вас
+В lab9/prototype.py:
+
+базовый интерфейс ModulePrototype с clone();
+конкретные прототипы:
+NLUPrototype
+TTSPrototype
+клон делается через deepcopy, чтобы корректно копировалось внутреннее состояние;
+CloneRegistry хранит прототипы по ключам и выдает копии (clone_by_key).
+Как применяется в вашем коде
+В lab9/main.py (AssistantAssembler._register_prototypes):
+
+из AssistantConfig.prototype_defaults создаются и регистрируются базовые прототипы nlu и tts. В демо:
+вызывается assembler.registry.clone_by_key("nlu") и "tts",
+выводятся клоны, показывая, что новые объекты получены из шаблона.
+5) Object Pool (Пул объектов)
+Теория простыми словами
+Object Pool хранит готовые объекты для переиспользования.
+Вместо “создал-уничтожил” каждый раз — “взял из пула-вернул обратно”.
+Это полезно, если создание объекта дорогое или объектов ограниченное число.
+
+Что сделано у вас
+В lab9/object_pool.py:
+
+PooledResource с обязательным reset_state();
+PlayerSession как пуллируемый ресурс (session_id, in_use, last_track);
+ObjectPool:
+acquire() — взять объект;
+release() — вернуть и сбросить состояние;
+учитывает max_size и grow;
+если пул исчерпан и расти нельзя — RuntimeError("ObjectPool exhausted").
+Как применяется в вашем коде
+В lab9/main.py:
+
+AssistantAssembler создает пул ObjectPool[PlayerSession];
+фабрика пула — _build_player_session (инкрементирует session_id);
+в демо:
+acquire() → отмечается использование;
+release() → возвращается в пул;
+печатаются total_count и free_count.
+Как все паттерны работают вместе в вашем lab9
+Очень коротко по цепочке:
+
+Singleton (AssistantConfig) хранит единую конфигурацию.
+По этой конфигурации выбирается Abstract Factory (offline/smart/car).
+Внутри фабрики для музыки используется Factory Method.
+Параллельно поднимаются шаблоны через Prototype (реестр + клоны).
+Для переиспользуемых сессий работает Object Pool.
+Всё это собирается в AssistantAssembler, который строит DialogManager.

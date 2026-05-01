@@ -1,0 +1,131 @@
+@startuml
+title ЛР09: Порождающие паттерны (проектирование на базе ЛР4)
+
+skinparam classAttributeIconSize 0
+
+package "ЛР4 (базовые абстракции)" {
+  interface MusicService
+  interface InfoService
+  interface Player
+  interface ASRModule
+  interface NLUModule
+  interface TTSModule
+  interface VoiceInterface
+  class DialogManager
+}
+
+package "Singleton" {
+  class AssistantConfig <<Singleton>> {
+    - instance: AssistantConfig
+    + get_instance(): AssistantConfig
+    + get(key: str): str
+  }
+}
+
+package "Factory Method" {
+  abstract class MusicServiceCreator {
+    + create_music_service(): MusicService
+  }
+  class SpotifyCreator
+  class VKCreator
+  class LocalFileCreator
+
+  class SpotifyMusicService
+  class VKMusicService
+  class LocalFileMusicService
+
+  MusicServiceCreator <|-- SpotifyCreator
+  MusicServiceCreator <|-- VKCreator
+  MusicServiceCreator <|-- LocalFileCreator
+
+  MusicService <|.. SpotifyMusicService
+  MusicService <|.. VKMusicService
+  MusicService <|.. LocalFileMusicService
+
+  SpotifyCreator --> SpotifyMusicService : creates
+  VKCreator --> VKMusicService : creates
+  LocalFileCreator --> LocalFileMusicService : creates
+}
+
+package "Prototype" {
+  interface ModulePrototype {
+    + clone(): ModulePrototype
+  }
+
+  class NLUPrototype {
+    + clone(): NLUPrototype
+  }
+  class TTSPrototype {
+    + clone(): TTSPrototype
+  }
+  class CloneRegistry {
+    + register(key: str, p: ModulePrototype): void
+    + clone_by_key(key: str): ModulePrototype
+  }
+
+  ModulePrototype <|.. NLUPrototype
+  ModulePrototype <|.. TTSPrototype
+  CloneRegistry --> ModulePrototype : stores
+}
+
+package "Object Pool" {
+  interface PooledResource {
+    + reset_state(): void
+  }
+  class PlayerSession
+  class ObjectPool {
+    + acquire(): PooledResource
+    + release(obj: PooledResource): void
+  }
+
+  PooledResource <|.. PlayerSession
+  ObjectPool --> PooledResource : manages
+}
+
+package "Abstract Factory" {
+  interface AssistantComponentFactory {
+    + create_music_service(): MusicService
+    + create_info_service(): InfoService
+    + create_player(): Player
+    + create_asr(): ASRModule
+    + create_nlu(): NLUModule
+    + create_tts(): TTSModule
+    + create_voice_interface(): VoiceInterface
+  }
+
+  class OfflineFactory
+  class SmartFactory
+  class CarFactory
+
+  AssistantComponentFactory <|.. OfflineFactory
+  AssistantComponentFactory <|.. SmartFactory
+  AssistantComponentFactory <|.. CarFactory
+}
+
+class AssistantAssembler {
+  + build_dialog_manager(profile: str): DialogManager
+}
+
+AssistantAssembler --> AssistantComponentFactory : uses
+AssistantAssembler --> AssistantConfig : reads
+AssistantAssembler --> CloneRegistry : uses
+AssistantAssembler --> ObjectPool : uses
+AssistantAssembler --> DialogManager : creates
+
+OfflineFactory --> AssistantConfig : reads
+SmartFactory --> AssistantConfig : reads
+CarFactory --> AssistantConfig : reads
+
+OfflineFactory --> MusicServiceCreator : uses
+SmartFactory --> MusicServiceCreator : uses
+CarFactory --> MusicServiceCreator : uses
+
+DialogManager --> MusicService
+DialogManager --> InfoService
+DialogManager --> Player
+DialogManager --> ASRModule
+DialogManager --> NLUModule
+DialogManager --> TTSModule
+DialogManager --> VoiceInterface
+
+@enduml

@@ -8,6 +8,9 @@ from typing import List
 
 from .composite import ResponseComponent, TextLeaf
 
+# Два пробела на уровень вложенности (визуально в консоли).
+_INDENT_UNIT = "  "
+
 
 class ResponseIterator(ABC):
     """Интерфейс итератора текстовых фрагментов (без привязки к структуре коллекции)."""
@@ -26,15 +29,17 @@ class DepthFirstTextIterator(ResponseIterator):
 
     def __init__(self, root: ResponseComponent) -> None:
         self._queue: List[str] = []
-        self._flatten_dfs(root)
+        self._flatten_dfs(root, depth=-1)
         self._index = 0
 
-    def _flatten_dfs(self, node: ResponseComponent) -> None:
+    def _flatten_dfs(self, node: ResponseComponent, depth: int) -> None:
         if isinstance(node, TextLeaf):
-            self._queue.append(node.text)
+            pad = _INDENT_UNIT * max(0, depth)
+            self._queue.append(f"{pad}{node.text}")
             return
+        next_depth = depth + 1
         for ch in node.get_children():
-            self._flatten_dfs(ch)
+            self._flatten_dfs(ch, next_depth)
 
     def has_next(self) -> bool:
         return self._index < len(self._queue)
@@ -53,13 +58,16 @@ class BreadthFirstTextIterator(ResponseIterator):
 
     def __init__(self, root: ResponseComponent) -> None:
         self._queue_fragments: List[str] = []
-        q: deque[ResponseComponent] = deque([root])
+        q: deque[tuple[ResponseComponent, int]] = deque([(root, -1)])
         while q:
-            node = q.popleft()
+            node, depth = q.popleft()
             if isinstance(node, TextLeaf):
-                self._queue_fragments.append(node.text)
+                pad = _INDENT_UNIT * max(0, depth)
+                self._queue_fragments.append(f"{pad}{node.text}")
             else:
-                q.extend(node.get_children())
+                next_depth = depth + 1
+                for ch in node.get_children():
+                    q.append((ch, next_depth))
         self._index = 0
 
     def has_next(self) -> bool:

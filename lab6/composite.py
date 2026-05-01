@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from pprint import pprint
 from typing import List
 
 
@@ -16,18 +15,13 @@ class ResponseComponent(ABC):
 
 
 class TextLeaf(ResponseComponent):
-    """Лист: один текстовый фрагмент для озвучивания."""
+    """Лист: один текстовый фрагмент. Детей нет — вложенность только через ResponseGroup."""
 
     def __init__(self, text: str) -> None:
         self.text = text
-        self._children: List[ResponseComponent] = []
-
-
-    def add(self, child: ResponseComponent) -> None:
-        self._children.append(child)
 
     def get_children(self) -> List[ResponseComponent]:
-        return list(self._children)
+        return []
 
 
 
@@ -53,10 +47,17 @@ class NewsResponseGroup(ResponseGroup):
         self._topic = topic
 
     def build_from_items(self, items: List[str]) -> None:
-        self.add(TextLeaf(f"Новости по теме «{self._topic.strip() or 'общее'}»."))
+        news_group = ResponseGroup()
+
+        news_group.add(TextLeaf(f"Новости по теме «{self._topic.strip() or 'общее'}»."))
+        option_group = ResponseGroup()
         for i, item in enumerate(items, start=1):
-            self.add(TextLeaf(f"Пункт {i}. {item}"))
-        self.add(TextLeaf("Это были главные заголовки."))
+            option_group.add(TextLeaf(f"Пункт {i}. {item}"))
+        news_group.add(option_group)
+        news_group.add(TextLeaf("Это были главные заголовки."))
+        news_group.add(TextLeaf(""))
+
+        self.add(news_group)
 
 
 
@@ -76,23 +77,24 @@ class ResponseBuilder:
         return TextLeaf(text)
 
     def build_news(self, topic: str, items: List[str]) -> ResponseComponent:
-        group = NewsResponseGroup(topic)
-        group.build_from_items(items)
 
-        group2 = NewsResponseGroup("СПОРТ")
+        main = NewsResponseGroup(topic)
 
-        football_theme = TextLeaf("Футбол")
-        football = TextLeaf("Футбол: Россия VS США")
-        football_theme.add(football)
-        group2.add(football_theme)
-        # group2.build_from_items(["футбол", "волейбол"])
+        main.build_from_items(items)
 
-        group.add(group2)
+        sport = ResponseGroup()
+        sport.add(TextLeaf("Вложенный раздел спорта."))
 
-        ch = group.get_children()
-        for child in ch:
-            print(child)
-        return group
+        football = ResponseGroup()
+        football.add(TextLeaf("Футбол: Австрия VS Португалия"))
+        football.add(TextLeaf("Футбол: Россия VS США"))
+
+        sport.add(football)
+        sport.add(TextLeaf("Это были главные новости спорта"))
+        sport.add(TextLeaf(""))
+
+        main.add(sport)
+        return main
 
     def build_news_empty(self) -> ResponseComponent:
         return TextLeaf("Новостей нет")

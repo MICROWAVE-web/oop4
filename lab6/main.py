@@ -86,6 +86,7 @@ def make_dialog2_bfs() -> Lab6DialogManager:
 
 
 if __name__ == "__main__":
-
-    make_dialog2_bfs().run()
+    # DFS — корректный порядок озвучки для вложенных ResponseGroup.
+    make_dialog_dfs().run()
     # make_dialog_bfs().run()
+    # make_dialog2_bfs().run()
