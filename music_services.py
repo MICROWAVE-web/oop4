@@ -115,9 +115,11 @@ class ProxyMusicService(MusicService):
 
     def play(self, track_id: str) -> None:
         """Проверка прав, затем вызов play у реального сервиса."""
-        print("Proxy: проверка прав")
+        print("Proxy: проверка прав...")
         if self.offline is True and self._real.is_offline is False:
-            print("Этот сервис не может быть воспроизведен оффлайн")
+            print("Некоторые функции этого сервиса в режиме оффлайн могут быть недоступны.")
+        else:
+            print("Все функции этого сервиса доступны.")
         self._real.play(track_id)
 
 
