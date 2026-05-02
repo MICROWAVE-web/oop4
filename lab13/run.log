@@ -3,8 +3,8 @@
 [ASSISTANT]: Голосовой ассистент запущен
 Введите текст: [USER]: включи музыку
 [USER]: включи музыку
-Proxy: проверка прав
-Этот сервис не может быть воспроизведен оффлайн
+Proxy: проверка прав...
+Некоторые функции этого сервиса в режиме оффлайн могут быть недоступны.
 Spotify: play spotify_track_1
 [ASSISTANT]: Воспроизвожу музыку
 [LOG] track_started: {'track': 'spotify_track_1'}
@@ -57,8 +57,8 @@ vol 7
 [ASSISTANT]: Переход в состояние: Playing
 [LOG] state_changed: {'from': 'Idle', 'to': 'Playing'}
 [SCREEN] mode=Playing | track=— | vol=7
-Proxy: проверка прав
-Этот сервис не может быть воспроизведен оффлайн
+Proxy: проверка прав...
+Некоторые функции этого сервиса в режиме оффлайн могут быть недоступны.
 Spotify: play spotify_track_1
 [LOG] track_started: {'track': 'spotify_track_1'}
 [SCREEN] mode=Playing | track=spotify_track_1 | vol=7

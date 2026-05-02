@@ -1,0 +1,97 @@
+@startuml
+title ЛР14 - Command + Chain of Responsibility + Visitor (на основе ЛР4)
+
+' --- Контекст: расширенный диалоговый менеджер из ЛР4 ---
+class DialogManager {
+  +run()
+  +handle_intent(intent, data)
+  +say(text)
+}
+
+class CommandDialogManager {
+  -chain : TextHandler
+  -factory : CommandFactory
+  -invoker : CommandInvoker
+  +run()
+}
+DialogManager <|-- CommandDialogManager
+
+' --- Command ---
+abstract class Command {
+  +execute()
+  +accept(v : CommandVisitor)
+}
+class PlayMusicCommand
+class SetVolumeCommand
+class GetInfoCommand
+class GetNewsCommand
+class ExitCommand
+class UnknownCommand
+Command <|-- PlayMusicCommand
+Command <|-- SetVolumeCommand
+Command <|-- GetInfoCommand
+Command <|-- GetNewsCommand
+Command <|-- ExitCommand
+Command <|-- UnknownCommand
+
+class CommandFactory {
+  +create(intent, data) : Command
+}
+class CommandInvoker {
+  +history : List<Command>
+  +execute(cmd : Command)
+}
+CommandDialogManager --> CommandFactory : создаёт команды
+CommandDialogManager --> CommandInvoker : выполняет
+CommandFactory ..> Command : <<creates>>
+CommandInvoker o--> "*" Command : history
+
+' --- Receivers (берутся как есть из ЛР4) ---
+class MusicService
+class Player
+class InfoService
+PlayMusicCommand --> MusicService : receiver
+SetVolumeCommand --> Player : receiver
+GetInfoCommand --> InfoService : receiver
+GetNewsCommand --> InfoService : receiver
+ExitCommand --> DialogManager : receiver
+
+' --- Chain of Responsibility (предобработка текста до NLU) ---
+abstract class TextHandler {
+  -successor : TextHandler
+  +set_next(h) : TextHandler
+  +handle(text) : Optional<str>
+}
+class StripHandler
+class EmptyTextHandler
+class LowercaseHandler
+class LoggingHandler
+TextHandler <|-- StripHandler
+TextHandler <|-- EmptyTextHandler
+TextHandler <|-- LowercaseHandler
+TextHandler <|-- LoggingHandler
+TextHandler --> TextHandler : successor
+CommandDialogManager --> TextHandler : первое звено цепочки
+
+' --- Visitor (обход истории команд) ---
+abstract class CommandVisitor {
+  +visit_play_music(c)
+  +visit_set_volume(c)
+  +visit_get_info(c)
+  +visit_get_news(c)
+  +visit_exit(c)
+  +visit_unknown(c)
+}
+class CommandStatisticsVisitor
+class CommandLogVisitor
+class UnknownCommandsVisitor
+CommandVisitor <|-- CommandStatisticsVisitor
+CommandVisitor <|-- CommandLogVisitor
+CommandVisitor <|-- UnknownCommandsVisitor
+Command ..> CommandVisitor : accept(v)
+
+' --- NLU как поставщик (intent, data) для фабрики команд ---
+class NLUModule
+CommandDialogManager ..> NLUModule : parse(text)
+
+@enduml
