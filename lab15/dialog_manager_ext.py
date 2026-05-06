@@ -9,6 +9,8 @@ invoker.history после завершения сеанса.
 
 from __future__ import annotations
 
+import traceback
+
 from dialog_manager import DialogManager
 from interfaces import (
     ASRModule,
@@ -73,5 +75,6 @@ class CommandDialogManager(DialogManager):
             except EOFError:
                 break
             except Exception as e:
+                traceback.print_exc()
                 self.say("Произошла ошибка. Повторите запрос.")
                 print(f"[ERROR]: {e}")

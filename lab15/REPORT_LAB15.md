@@ -16,7 +16,7 @@
 
 **Тема:** Паттерны поведения 2 — реализация (**Command**, **Chain of Responsibility**, **Visitor**).
 
-**Основа:** только корневые модули ЛР4 (`interfaces.py`, `dialog_manager.py`, `music_services.py`, `info_services.py`, `player.py`, `nlu.py`, `tts.py`). Builder из ЛР11 и State/Memento/Observer из ЛР13 не используются — конфигурация собирается вручную в `lab15/main.py`.
+**Основа:** только корневые модули ЛР4 (`interfaces.py`, `dialog_manager.py`, `music_services.py`, `info_services.py`, `player.py`, `nlu.py`, `tts.py`) — конфигурация собирается вручную в `lab15/main.py`.
 
 Запуск: `python -m lab15.main` из корня репозитория.
 

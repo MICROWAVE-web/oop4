@@ -12,6 +12,9 @@ Spotify: play spotify_track_1
 [ASSISTANT]: Переход в состояние: Playing
 [LOG] state_changed: {'from': 'Idle', 'to': 'Playing'}
 [SCREEN] mode=Playing | track=spotify_track_1 | vol=0
+Введите текст: [USER]: включи музыку
+[USER]: включи музыку
+[ASSISTANT]: Уже играет: spotify_track_1
 Введите текст: [USER]: громкость 7
 [USER]: громкость 7
 vol 7

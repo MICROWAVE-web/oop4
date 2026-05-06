@@ -2,10 +2,11 @@
 
 [ASSISTANT]: Голосовой ассистент запущен
 Введите текст: ''
+[CHAIN] LoggingHandler: текст принят к разбору: ''
 [CHAIN] EmptyTextHandler: пустой запрос, итерация пропущена
 Введите текст: 'ПРИВЕТ   '
+[CHAIN] LoggingHandler: текст принят к разбору: 'ПРИВЕТ   '
 [CHAIN] LowercaseHandler: 'ПРИВЕТ' -> 'привет'
-[CHAIN] LoggingHandler: текст принят к разбору: 'привет'
 [USER]: привет
 [ASSISTANT]: Wikipedia summary for привет
 Введите текст: 'включи музыку'
@@ -21,13 +22,13 @@ Spotify: play spotify_track_1
 vol 7
 [ASSISTANT]: Громкость установлена: 7
 Введите текст: 'новости IT'
+[CHAIN] LoggingHandler: текст принят к разбору: 'новости IT'
 [CHAIN] LowercaseHandler: 'новости IT' -> 'новости it'
-[CHAIN] LoggingHandler: текст принят к разбору: 'новости it'
 [USER]: новости it
 [ASSISTANT]: Новостей нет
 Введите текст: 'расскажи про OOP'
+[CHAIN] LoggingHandler: текст принят к разбору: 'расскажи про OOP'
 [CHAIN] LowercaseHandler: 'расскажи про OOP' -> 'расскажи про oop'
-[CHAIN] LoggingHandler: текст принят к разбору: 'расскажи про oop'
 [USER]: расскажи про oop
 [ASSISTANT]: Wikipedia summary for расскажи про oop
 Введите текст: 'выключись'

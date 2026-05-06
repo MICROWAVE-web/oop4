@@ -76,10 +76,11 @@ def build_default_chain() -> TextHandler:
 
     Возвращает первое звено — клиент может сразу вызвать chain.handle(text).
     """
+    log = LoggingHandler()
     strip = StripHandler()
     empty = EmptyTextHandler()
     lower = LowercaseHandler()
-    log = LoggingHandler()
 
-    strip.set_next(empty).set_next(lower).set_next(log)
-    return strip
+
+    log.set_next(strip).set_next(lower).set_next(empty)
+    return log

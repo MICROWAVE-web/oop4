@@ -70,6 +70,7 @@ class _Tee:
 # Один связный сценарий: проходит все три паттерна.
 SCRIPT: list[str] = [
     "включи музыку",        # Idle -> Playing, событие track_started
+    "включи музыку",        # Idle -> Playing, событие track_started
     "громкость 7",          # volume_changed
     "запомни настройки",    # snapshot_saved
     "громкость 3",          # volume_changed

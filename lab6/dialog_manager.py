@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import traceback
 from typing import Any
 
 from interfaces import (
@@ -60,6 +61,7 @@ class Lab6DialogManager:
             except EOFError:
                 break
             except Exception as e:
+                traceback.print_exc()
                 self.say(self._builder.build_error())
                 print(f"[ERROR]: {e}")
 

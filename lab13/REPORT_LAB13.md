@@ -44,9 +44,9 @@
 - `StatisticsObserver` — накапливает счётчики событий за сеанс (сколько раз случилось `track_started`, `volume_changed` и т.д.) и формирует итоговый отчёт `report()`.
 - `ScreenObserver` — имитация экрана колонки: на каждое значимое событие печатает строку «текущий экран» (`mode`, `track`, `vol`).
 
-### Расширение исходных модулей ЛР4
+### Расширение исходных модулей
 
-- `lab13/nlu_ext.py` — `ExtendedRuleBasedNLU(RuleBasedNLU)`. Добавляет ключевые слова: «запомни» → `snapshot`, «восстанови» → `restore`, «не беспокой» → `mute`, «вернись» → `unmute`, «стоп» → `system/stop`. Прочие команды передаются базовому NLU из ЛР4.
+- `lab13/nlu_ext.py` — `ExtendedRuleBasedNLU(RuleBasedNLU)`. Добавляет ключевые слова: «запомни» → `snapshot`, «восстанови» → `restore`, «не беспокой» → `mute`, «вернись» → `unmute`, «стоп» → `system/stop`. Прочие команды передаются базовому NLU.
 - `lab13/dialog_manager_ext.py` — `StatefulDialogManager(DialogManager)`. Делегирует `handle_intent` текущему состоянию, публикует события через `EventSubject`, владеет `SettingsCaretaker`. Добавляет операции `start_music`, `stop_music`, `change_volume`, `save_snapshot`, `restore_snapshot`, `delegate_info`, `delegate_news`.
 
 ---
@@ -72,10 +72,10 @@ def build_assistant(
 Шаги конфигурирования:
 
 1. **Сборка зависимостей через Builder из ЛР11.** `AssistantDirector` + `OfflineAssistantBuilder` дают `AssistantAssembly` с готовым набором сервисов (Proxy + Spotify, Wikipedia, BasicPlayer, SimpleASR, BasicTTS, ScriptedVoiceInterface).
-2. **Подмена NLU.** `assembly.nlu = ExtendedRuleBasedNLU()` — теперь распознаются новые команды без правки исходного `RuleBasedNLU` из ЛР4.
+2. **Подмена NLU.** `assembly.nlu = ExtendedRuleBasedNLU()` — теперь распознаются новые команды без правки исходного `RuleBasedNLU`.
 3. **Регистрация наблюдателей.** Создаётся `EventSubject`, к нему подписываются `LoggerObserver`, `StatisticsObserver`, `ScreenObserver`. Наблюдатели полностью независимы — добавление/удаление любого из них не требует правок в `StatefulDialogManager`.
 4. **Создание расширенного менеджера.** `StatefulDialogManager` принимает все зависимости из сборки + начальное состояние (`IdleState`), `SettingsCaretaker`, `EventSubject` и стартовый уровень громкости.
-5. **Запуск сценария.** `manager.run()` крутит главный цикл `DialogManager` из ЛР4, но `handle_intent` теперь делегирован текущему состоянию.
+5. **Запуск сценария.** `manager.run()` крутит главный цикл `DialogManager` , но `handle_intent` теперь делегирован текущему состоянию.
 
 Сценарий проходит все три паттерна:
 

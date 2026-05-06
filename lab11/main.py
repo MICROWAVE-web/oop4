@@ -46,10 +46,11 @@ def run_scenario(
     builder: AssistantBuilder,
     director: AssistantDirector,
     phrases: list[str],
+    is_minimal: bool = False,
 ) -> None:
     print(f"\n=== {title} ===")
     scripted_voice = ScriptedVoiceInterface(phrases)
-    assembly = director.construct(builder=builder, voice_override=scripted_voice)
+    assembly = director.construct(builder=builder, voice_override=scripted_voice, is_minimal=is_minimal)
     dialog_manager = assembly.to_dialog_manager()
     dialog_manager.run()
 
@@ -68,6 +69,7 @@ def main() -> None:
         builder=offline_builder,
         director=director,
         phrases=["включи музыку", "громкость 7", "выключись"],
+        is_minimal=True,
     )
 
     run_scenario(

@@ -1,4 +1,5 @@
 """Диалоговый менеджер: координирует все сервисы и обрабатывает намерения пользователя."""
+import traceback
 
 from interfaces import (
     MusicService,
@@ -52,6 +53,7 @@ class DialogManager:
             except EOFError:
                 break
             except Exception as e:
+                traceback.print_exc()
                 self.say("Произошла ошибка. Повторите запрос.")
                 print(f"[ERROR]: {e}")
 
@@ -75,6 +77,10 @@ class DialogManager:
 
     def handle_music(self, data):
         """Ищет треки, воспроизводит первый и сообщает пользователю."""
+
+        if not self.music_service:
+            self.say("Сервис отключен")
+            return
         tracks = self.music_service.search(data)
         if not tracks:
             self.say("Ничего не найдено")
@@ -85,11 +91,17 @@ class DialogManager:
 
     def handle_info(self, data):
         """Запрос к справочному сервису и озвучивание ответа."""
+        if not self.info_service:
+            self.say("Сервис отключен")
+            return
         result = self.info_service.get_info(data)
         self.say(result)
 
     def handle_news(self, data):
         """Получение новостей по теме и озвучивание по пунктам."""
+        if not self.info_service:
+            self.say("Сервис отключен")
+            return
         news = self.info_service.get_news(data)
         if not news:
             self.say("Новостей нет")
@@ -104,6 +116,9 @@ class DialogManager:
 
     def handle_volume(self, data):
         """Установка громкости через плеер; data — число уровня."""
+        if not self.player:
+            self.say("Сервис отключен")
+            return
         try:
             level = int(data)
             self.player.set_volume(level)

@@ -43,8 +43,8 @@ class AssistantAssembly:
             )
             if value is None
         ]
-        if missing:
-            raise RuntimeError(f"Сборка не завершена, отсутствуют поля: {', '.join(missing)}")
+        #if missing:
+        #    raise RuntimeError(f"Сборка не завершена, отсутствуют поля: {', '.join(missing)}")
         return DialogManager(
             music_service=self.music_service,
             info_service=self.info_service,
@@ -186,11 +186,15 @@ class AssistantDirector:
         self,
         builder: AssistantBuilder,
         voice_override: VoiceInterface | None = None,
+        is_minimal: bool = False,
     ) -> AssistantAssembly:
         builder.reset()
-        builder.build_music()
-        builder.build_info()
-        builder.build_player()
+
+        if not is_minimal:
+            builder.build_music()
+            builder.build_info()
+            builder.build_player()
+
         builder.build_asr()
         builder.build_nlu()
         builder.build_tts()
